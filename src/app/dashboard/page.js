@@ -82,7 +82,7 @@ export default function Dashboard() {
               className="!rounded-full px-6 py-4 font-bold text-sm">
               <FiFilm className="mr-2" /> Compose ad
             </Button>
-            <Button onClick={() => router.push("/")} size="lg"
+            <Button onClick={() => router.push("/workspace")} size="lg"
               className="!rounded-full !bg-primary-500 !text-bg-page hover:!bg-primary-600 px-6 py-4 font-bold text-sm shadow-xl shadow-primary-500/20">
               <FiPlus className="mr-2" /> New Creation
             </Button>
@@ -103,7 +103,7 @@ export default function Dashboard() {
             </div>
             <div className="space-y-4">
               <h3 className="text-xl font-medium text-foreground">Gallery Empty</h3>
-              <Button onClick={() => router.push("/")} variant="primary" className="!rounded-full px-8">Start Manifesting</Button>
+              <Button onClick={() => router.push("/workspace")} variant="primary" className="!rounded-full px-8">Start Manifesting</Button>
             </div>
           </div>
         ) : (

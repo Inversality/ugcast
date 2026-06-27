@@ -5,7 +5,7 @@ import { useSession, signOut } from "next-auth/react";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { IoClose, IoMenu } from "react-icons/io5";
-import { FiMoon, FiSun, FiLogOut, FiDollarSign, FiPlus, FiUser } from "react-icons/fi";
+import { FiMoon, FiSun, FiLogOut, FiDollarSign, FiPlus, FiUser, FiSettings, FiCreditCard } from "react-icons/fi";
 import config from "@/lib/config";
 
 export default function Navbar() {
@@ -31,7 +31,7 @@ export default function Navbar() {
         { name: "Pricing", path: `/app/${currentAppId}/pricing` },
       ]
     : [
-        { name: "Workspace", path: "/" },
+        { name: "Workspace", path: "/workspace" },
         { name: "Actors", path: "/actors" },
         { name: "Editor", path: "/editor" },
         { name: "Gallery", path: "/dashboard" },
@@ -44,7 +44,7 @@ export default function Navbar() {
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
         
         {/* Logo and Brand Title (Visible at all times) */}
-        <Link href="/" className="flex items-center gap-2.5 transition-transform hover:scale-[1.02] active:scale-95">
+        <Link href="/workspace" className="flex items-center gap-2.5 transition-transform hover:scale-[1.02] active:scale-95">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="/brand/icon-tile.svg"
@@ -88,7 +88,7 @@ export default function Navbar() {
               <div className="flex items-center h-9 border border-divider rounded-l bg-bg-page/30 overflow-hidden pr-2">
                 <span className="font-bold text-[13px] px-3 flex items-center text-primary-text gap-1">
                   <FiDollarSign className="text-emerald-500 text-xs" />
-                  {session.user.credits !== undefined ? session.user.credits : 0}
+                  {session.user.unlimited ? "∞" : (session.user.credits ?? 0)}
                 </span>
                 <Link
                   href="/pricing"
@@ -122,6 +122,23 @@ export default function Navbar() {
                     <div className="px-3 py-2 text-xs text-secondary-text border-b border-divider/50 mb-1 truncate">
                       {session.user.email}
                     </div>
+                    <Link
+                      href="/settings"
+                      onClick={() => setIsProfileOpen(false)}
+                      className="flex w-full items-center gap-2 rounded px-3 py-2 text-left text-sm font-semibold text-primary-text hover:bg-bg-page transition-colors"
+                    >
+                      <FiSettings size={14} />
+                      <span>Settings</span>
+                    </Link>
+                    <Link
+                      href="/billing"
+                      onClick={() => setIsProfileOpen(false)}
+                      className="flex w-full items-center gap-2 rounded px-3 py-2 text-left text-sm font-semibold text-primary-text hover:bg-bg-page transition-colors"
+                    >
+                      <FiCreditCard size={14} />
+                      <span>Billing</span>
+                    </Link>
+                    <div className="h-px bg-divider/50 my-1" />
                     <button
                       onClick={() => signOut({ callbackUrl: "/login" })}
                       className="flex w-full items-center gap-2 rounded px-3 py-2 text-left text-sm font-semibold text-red-500 hover:bg-red-500/10 transition-colors"
@@ -148,7 +165,7 @@ export default function Navbar() {
           {status === "authenticated" && (
             <div className="flex items-center h-8 border border-divider rounded bg-bg-page/30 px-2.5 text-xs font-bold text-primary-text gap-0.5">
               <FiDollarSign className="text-emerald-500 text-[10px]" />
-              {session.user.credits !== undefined ? session.user.credits : 0}
+              {session.user.unlimited ? "∞" : (session.user.credits ?? 0)}
             </div>
           )}
           
@@ -183,16 +200,37 @@ export default function Navbar() {
             <div className="h-px bg-divider/50 my-2" />
 
             {status === "authenticated" ? (
-              <button
-                onClick={() => {
-                  setIsOpen(false);
-                  signOut({ callbackUrl: "/login" });
-                }}
-                className="flex w-full items-center justify-center gap-2 rounded bg-red-500/10 text-red-500 py-3 text-sm font-bold hover:bg-red-500/20 transition-all border border-red-500/20 mt-2"
-              >
-                <FiLogOut size={16} />
-                <span>Sign Out</span>
-              </button>
+              <>
+                <span className="text-[10px] uppercase font-bold text-secondary-text tracking-widest mb-1">Account</span>
+                <Link
+                  href="/settings"
+                  onClick={() => setIsOpen(false)}
+                  className={`flex items-center gap-2 py-2.5 rounded text-sm font-semibold transition-all ${
+                    pathname === "/settings" ? "bg-primary/10 text-primary px-3 border border-primary/20" : "text-primary-text hover:bg-bg-card"
+                  }`}
+                >
+                  <FiSettings size={16} /> Settings
+                </Link>
+                <Link
+                  href="/billing"
+                  onClick={() => setIsOpen(false)}
+                  className={`flex items-center gap-2 py-2.5 rounded text-sm font-semibold transition-all ${
+                    pathname === "/billing" ? "bg-primary/10 text-primary px-3 border border-primary/20" : "text-primary-text hover:bg-bg-card"
+                  }`}
+                >
+                  <FiCreditCard size={16} /> Billing
+                </Link>
+                <button
+                  onClick={() => {
+                    setIsOpen(false);
+                    signOut({ callbackUrl: "/login" });
+                  }}
+                  className="flex w-full items-center justify-center gap-2 rounded bg-red-500/10 text-red-500 py-3 text-sm font-bold hover:bg-red-500/20 transition-all border border-red-500/20 mt-2"
+                >
+                  <FiLogOut size={16} />
+                  <span>Sign Out</span>
+                </button>
+              </>
             ) : (
               <Link
                 href="/login"

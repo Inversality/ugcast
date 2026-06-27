@@ -315,6 +315,105 @@
 }
 
 /* ============================================================================
+   Immersive atmosphere — workspace canvas
+   A layered "cinematic stage": a breathing central glow anchors the hero,
+   gold embers drift up to fill the void, and a vignette deepens the edges.
+   ========================================================================== */
+
+/* Breathing "stage" glow that anchors the hero in the empty canvas */
+@keyframes stageBreath {
+  0%, 100% { opacity: 0.5; transform: translate(-50%, -50%) scale(1); }
+  50%      { opacity: 0.8; transform: translate(-50%, -50%) scale(1.08); }
+}
+.stage-glow {
+  position: absolute;
+  top: 42%;
+  left: 50%;
+  width: min(88vw, 720px);
+  height: min(88vw, 720px);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  border-radius: 9999px;
+  background: radial-gradient(
+    circle at center,
+    color-mix(in oklab, var(--color-primary) 24%, transparent) 0%,
+    color-mix(in oklab, var(--color-secondary-500) 12%, transparent) 38%,
+    transparent 68%
+  );
+  filter: blur(44px);
+  animation: stageBreath 8s ease-in-out infinite;
+}
+
+/* Drifting gold embers — per-particle motion is driven by CSS vars (--ember-*) */
+@keyframes emberRise {
+  0%   { transform: translateY(0) translateX(0); opacity: 0; }
+  12%  { opacity: var(--ember-opacity, 0.45); }
+  85%  { opacity: var(--ember-opacity, 0.45); }
+  100% { transform: translateY(calc(-1 * var(--ember-travel, 80vh))) translateX(var(--ember-drift, 16px)); opacity: 0; }
+}
+.ember {
+  position: absolute;
+  bottom: -10px;
+  width: var(--ember-size, 3px);
+  height: var(--ember-size, 3px);
+  border-radius: 9999px;
+  background: radial-gradient(circle at center, color-mix(in oklab, var(--color-primary-100) 95%, transparent), transparent 70%);
+  box-shadow: 0 0 10px color-mix(in oklab, var(--color-primary) 65%, transparent);
+  animation: emberRise var(--ember-duration, 16s) linear infinite;
+  animation-delay: var(--ember-delay, 0s);
+  will-change: transform, opacity;
+}
+
+/* Vignette to deepen the edges and focus the eye on center stage */
+.canvas-vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse 78% 68% at 50% 44%,
+    transparent 55%,
+    color-mix(in oklab, var(--color-bg-page) 78%, transparent) 100%
+  );
+}
+
+/* Emanating "beacon" rings around a focal element (hero icon) */
+@keyframes beaconPulse {
+  0%   { transform: scale(0.85); opacity: 0.5; }
+  100% { transform: scale(2.6); opacity: 0; }
+}
+.beacon-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border: 1px solid color-mix(in oklab, var(--color-primary) 50%, transparent);
+  animation: beaconPulse 3.5s ease-out infinite;
+  pointer-events: none;
+}
+
+/* Soft glow that grounds the composer into the scene */
+.composer-underglow {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(760px, 94vw);
+  height: 100%;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse at bottom,
+    color-mix(in oklab, var(--color-primary) 16%, transparent),
+    transparent 70%
+  );
+  filter: blur(48px);
+}
+
+/* Respect users who prefer less motion — keep the atmosphere, drop the animation */
+@media (prefers-reduced-motion: reduce) {
+  .stage-glow, .beacon-ring { animation: none; }
+  .ember { animation: none; opacity: 0.22; }
+}
+
+/* ============================================================================
    Scrollbars
    ========================================================================== */
 .scrollbar-subtle::-webkit-scrollbar,

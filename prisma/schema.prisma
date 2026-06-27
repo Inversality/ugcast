@@ -44,7 +44,7 @@ model User {
   // `credits`       = subscription allowance; refreshed each cycle and EXPIRES.
   // `topupCredits`  = one-time purchased packs; persist, spent only after the
   //                   subscription allowance runs out.
-  credits       Int       @default(100)  // free trial grant (enough to try AI tools)
+  credits       Int       @default(0)    // no free-trial grant; users buy a plan or top-ups
   topupCredits  Int       @default(0)
 
   // ── Subscription state ─────────────────────────────────────────────────

@@ -21,6 +21,7 @@ export const authOptions = {
         session.user.credits = balance.total;
         session.user.allowanceCredits = balance.credits;
         session.user.topupCredits = balance.topupCredits;
+        session.user.unlimited = balance.unlimited || false; // founder = unlimited usage
         session.user.plan = user.plan || null;
       }
       return session;
