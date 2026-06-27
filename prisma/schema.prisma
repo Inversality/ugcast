@@ -1,0 +1,167 @@
+generator client {
+  provider      = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Account {
+  id                 String  @id @default(cuid())
+  userId             String
+  type               String
+  provider           String
+  providerAccountId  String
+  refresh_token      String?  @db.Text
+  access_token       String?  @db.Text
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String?  @db.Text
+  session_state      String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+
+  // ── Credits (two buckets) ──────────────────────────────────────────────
+  // `credits`       = subscription allowance; refreshed each cycle and EXPIRES.
+  // `topupCredits`  = one-time purchased packs; persist, spent only after the
+  //                   subscription allowance runs out.
+  credits       Int       @default(100)  // free trial grant (enough to try AI tools)
+  topupCredits  Int       @default(0)
+
+  // ── Subscription state ─────────────────────────────────────────────────
+  plan                 String?   // null (free) | starter | pro | studio
+  planInterval         String?   // month | year
+  planStatus           String?   // active | past_due | canceled
+  monthlyCredits       Int       @default(0)   // allowance restored each cycle
+  creditsRefreshAt     DateTime?               // when `credits` next resets (lazy)
+  currentPeriodEnd     DateTime?               // end of the paid Stripe period
+  stripeCustomerId     String?   @unique
+  stripeSubscriptionId String?   @unique
+
+  accounts      Account[]
+  sessions      Session[]
+  creations     Creation[]
+  actors        Actor[]
+  projects      Project[]
+  apiKeys       ApiKey[]
+}
+
+// Public API key for programmatic access (/api/v1/*). Only the SHA-256 hash is
+// stored; the raw key is shown once at creation time.
+model ApiKey {
+  id         String    @id @default(cuid())
+  name       String?
+  hash       String    @unique
+  prefix     String    // first chars, shown so users can identify a key
+  userId     String
+  createdAt  DateTime  @default(now())
+  lastUsedAt DateTime?
+  revoked    Boolean   @default(false)
+
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+// A reusable AI actor / persona. Stock actors (isStock=true) are global
+// (userId null) and seeded once; users can also save their own personas.
+model Actor {
+  id          String     @id @default(cuid())
+  name        String
+  description String?    @db.Text   // persona / generation prompt
+  imageUrl    String     @db.Text   // hosted reference face/product
+  gender      String?
+  ageRange    String?
+  setting     String?               // indoor / outdoor / studio
+  isStock     Boolean    @default(false)
+  userId      String?               // null = global stock actor
+  createdAt   DateTime   @default(now())
+
+  user        User?      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  creations   Creation[]
+
+  @@index([userId])
+}
+
+// A multi-scene ad assembled in the editor and rendered by the Remotion worker.
+model Project {
+  id        String   @id @default(cuid())
+  userId    String
+  title     String?
+  status    String   @default("draft")   // draft | rendering | completed | failed
+  timeline  Json?                         // ordered scenes + caption/music refs
+  outputUrl String?  @db.Text
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Creation {
+  id           String   @id @default(cuid())
+  type         String?  // video or image
+  title        String?
+  prompt       String?  @db.Text
+  url          String?  @db.Text
+  createdAt    DateTime @default(now())
+  userId       String
+
+  requestId    String?  @unique
+  status       String   @default("processing")
+  error        String?  @db.Text
+
+  // Generation parameters
+  modelId      String?
+  aspectRatio  String?
+  resolution   String?
+  duration     Int?
+  mode         String?
+  inputImages  String?  @db.Text
+
+  // UGC / talking-avatar pipeline
+  kind            String?  // talking-avatar | raw-video | b-roll | scene
+  actorId         String?
+  script          String?  @db.Text   // spoken text (distinct from visual prompt)
+  audioUrl        String?  @db.Text   // TTS output fed to the avatar model
+  voiceId         String?
+  emotion         String?
+  language        String?
+  captionsEnabled Boolean?
+  musicUrl        String?  @db.Text
+  batchId         String?              // groups variants generated together
+  projectId       String?
+
+  user  User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  actor Actor? @relation(fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([batchId])
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}

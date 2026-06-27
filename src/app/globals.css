@@ -1,0 +1,374 @@
+@import "tailwindcss";
+
+/* ============================================================================
+   OPEN AI UGC — Design System
+   Premium dark theme · indigo/violet accent (Arcads-inspired) ·
+   Aceternity-style aurora / glow / gradient utilities.
+   ========================================================================== */
+
+@theme {
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-outfit: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+
+  /* ---- Surfaces (deep emerald-black) ------------------------------------- */
+  --color-bg-page: var(--bg-page, #0a130d);
+  --color-solid-bg: var(--bg-page, #0a130d);
+  --color-bg-card: var(--bg-card, #111d15);
+  --color-bg-card-hover: var(--bg-card-hover, #18281c);
+  --color-bg-elevated: var(--bg-elevated, #14211880);
+
+  /* ---- Glass (warm gold-tinted translucent overlays) --------------------- */
+  --color-glass-bg: rgba(230, 212, 154, 0.04);
+  --color-glass-hover: rgba(230, 212, 154, 0.08);
+  --color-glass-border: rgba(216, 196, 138, 0.16);
+
+  /* ---- Lines & text (cream / sage) --------------------------------------- */
+  --color-divider: var(--divider, rgba(216, 196, 138, 0.14));
+  --color-foreground: var(--primary-text, #f2efe2);
+  --color-muted: var(--secondary-text, #97a398);
+  --color-primary-text: var(--primary-text, #f2efe2);
+  --color-secondary-text: var(--secondary-text, #aab3a8);
+
+  /* ---- Brand / primary (champagne gold) ---------------------------------- */
+  --color-primary-50: #faf6e8;
+  --color-primary-100: #f4eccf;
+  --color-primary-200: #ecddab;
+  --color-primary-300: #e6d49a;
+  --color-primary-400: #ddc77f;
+  --color-primary-500: var(--primary, #d3b969);
+  --color-primary-600: var(--primary-hover, #b89a4b);
+  --color-primary-700: #977b39;
+  --color-primary: var(--primary, #d3b969);
+  --color-primary-hover: var(--primary-hover, #b89a4b);
+  --color-primary-btn-text: var(--primary-btn-text, #0a130d);
+
+  /* ---- Secondary / accent (warm amber-bronze) ---------------------------- */
+  --color-secondary-400: #cf9a55;
+  --color-secondary-500: #bd7d39;
+  --color-secondary-600: #9c6228;
+
+  /* ---- Radii ------------------------------------------------------------- */
+  --radius-sm: 0.5rem;
+  --radius: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
+
+  /* ---- Named animations (Aceternity registry components) ----------------- */
+  --animate-aurora: aurora 60s linear infinite;
+}
+
+/* Keyframe powering the official Aceternity <AuroraBackground /> */
+@keyframes aurora {
+  from { background-position: 50% 50%, 50% 50%; }
+  to { background-position: 350% 50%, 350% 50%; }
+}
+
+/* ============================================================================
+   Alternate premium themes (set via <html data-theme="…">)
+   Only override base tokens; glass overlays adapt automatically.
+   ========================================================================== */
+[data-theme="cyberpunk"] {
+  --bg-page: #05010a; --bg-card: #0e051c; --bg-card-hover: #1b0c32; --bg-elevated: #150827;
+  --divider: rgba(236, 72, 153, 0.22); --primary: #f43f5e; --primary-hover: #e11d48;
+  --primary-text: #fff1f2; --secondary-text: #06b6d4; --primary-btn-text: #ffffff;
+}
+[data-theme="emerald"] {
+  --bg-page: #021410; --bg-card: #06231b; --bg-card-hover: #0a3429; --bg-elevated: #07291f;
+  --divider: rgba(16, 185, 129, 0.20); --primary: #10b981; --primary-hover: #059669;
+  --primary-text: #ecfdf5; --secondary-text: #34d399; --primary-btn-text: #022c22;
+}
+[data-theme="sunset"] {
+  --bg-page: #140800; --bg-card: #241200; --bg-card-hover: #361b00; --bg-elevated: #2b1500;
+  --divider: rgba(249, 115, 22, 0.22); --primary: #f97316; --primary-hover: #ea580c;
+  --primary-text: #fff7ed; --secondary-text: #fb923c; --primary-btn-text: #1c0a00;
+}
+[data-theme="midnight"] {
+  --bg-page: #000000; --bg-card: #0b0b0e; --bg-card-hover: #1a1a1f; --bg-elevated: #131317;
+  --divider: rgba(255, 255, 255, 0.10); --primary: #ffffff; --primary-hover: #e4e4e7;
+  --primary-text: #f4f4f5; --secondary-text: #a1a1aa; --primary-btn-text: #000000;
+}
+
+/* ============================================================================
+   Base
+   ========================================================================== */
+@layer base {
+  * {
+    border-color: var(--color-divider);
+  }
+  html, body {
+    background-color: var(--color-bg-page);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  /* Ambient backdrop: subtle violet glow + faint grid behind everything */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(70rem 50rem at 50% -8%, rgba(34, 94, 60, 0.40), transparent 68%),
+      radial-gradient(45rem 32rem at 50% 28%, color-mix(in oklab, var(--color-primary) 8%, transparent), transparent 72%);
+  }
+  ::selection {
+    background: color-mix(in oklab, var(--color-primary) 55%, transparent);
+    color: #0a130d;
+  }
+}
+
+/* Keep button text legible regardless of theme primary */
+.bg-primary,
+.bg-primary-500,
+.bg-primary-600 {
+  color: var(--color-primary-btn-text, #ffffff);
+}
+
+/* ============================================================================
+   Glass surfaces
+   ========================================================================== */
+.glass-panel {
+  background: color-mix(in oklab, var(--color-bg-page) 55%, transparent);
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  border: 1px solid var(--color-glass-border);
+}
+
+.glass-dropdown {
+  background: color-mix(in oklab, var(--color-bg-card) 88%, transparent);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  border: 1px solid var(--color-glass-border);
+}
+
+.glass-card {
+  position: relative;
+  background: var(--color-glass-bg);
+  backdrop-filter: blur(14px) saturate(150%);
+  -webkit-backdrop-filter: blur(14px) saturate(150%);
+  border: 1px solid var(--color-glass-border);
+  border-radius: var(--radius-lg);
+  box-shadow:
+    0 1px 0 0 rgba(255, 255, 255, 0.04) inset,
+    0 20px 40px -24px rgba(0, 0, 0, 0.8);
+}
+
+/* ============================================================================
+   Aceternity-style helpers
+   ========================================================================== */
+
+/* Animated aurora gradient (use inside a relatively-positioned container) */
+.aurora-bg {
+  position: absolute;
+  inset: -20%;
+  z-index: 0;
+  pointer-events: none;
+  filter: blur(64px) saturate(150%);
+  opacity: 0.55;
+  background:
+    conic-gradient(
+      from 180deg at 50% 50%,
+      var(--color-primary-500) 0deg,
+      var(--color-secondary-500) 120deg,
+      #1f5a3a 240deg,
+      var(--color-primary-500) 360deg
+    );
+  background-size: 200% 200%;
+  animation: auroraShift 14s ease-in-out infinite;
+}
+
+@keyframes auroraShift {
+  0%, 100% { background-position: 0% 50%; transform: rotate(0deg) scale(1); }
+  50% { background-position: 100% 50%; transform: rotate(8deg) scale(1.1); }
+}
+
+/* Faint dotted/grid backdrop */
+.bg-grid {
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+  background-size: 36px 36px;
+  -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 40%, transparent 100%);
+  mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 40%, transparent 100%);
+}
+
+.bg-dot {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+
+/* Gradient text */
+.text-gradient {
+  background-image: linear-gradient(
+    100deg,
+    #f4eccf,
+    var(--color-primary-300) 40%,
+    var(--color-primary-600) 92%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.text-gradient-soft {
+  background-image: linear-gradient(180deg, #f8f5ea, color-mix(in oklab, var(--color-foreground) 50%, transparent));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Glow / spotlight radial helper driven by --x / --y mouse vars */
+.spotlight-card {
+  position: relative;
+  isolation: isolate;
+}
+.spotlight-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  background: radial-gradient(
+    260px circle at var(--x, 50%) var(--y, 50%),
+    color-mix(in oklab, var(--color-primary) 22%, transparent),
+    transparent 65%
+  );
+  z-index: -1;
+}
+.spotlight-card:hover::before { opacity: 1; }
+
+/* Moving conic-gradient border */
+.moving-border {
+  position: relative;
+  background: var(--color-bg-card);
+  border-radius: 9999px;
+}
+.moving-border::before {
+  content: "";
+  position: absolute;
+  inset: -1.5px;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: conic-gradient(
+    from var(--angle, 0deg),
+    transparent 0deg,
+    var(--color-primary-500) 90deg,
+    var(--color-secondary-500) 180deg,
+    transparent 270deg
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: spinBorder 4s linear infinite;
+}
+
+@property --angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+@keyframes spinBorder {
+  to { --angle: 360deg; }
+}
+
+/* Soft primary glow shadow utility */
+.glow-primary {
+  box-shadow: 0 8px 30px -6px color-mix(in oklab, var(--color-primary) 60%, transparent);
+}
+
+/* Stronger, breathing glow for hero / focal elements */
+.glow-primary-lg {
+  box-shadow:
+    0 0 0 1px color-mix(in oklab, var(--color-primary) 20%, transparent),
+    0 12px 50px -8px color-mix(in oklab, var(--color-primary) 70%, transparent);
+}
+
+@keyframes auraBreath {
+  0%, 100% {
+    box-shadow: 0 0 30px -10px color-mix(in oklab, var(--color-primary) 55%, transparent);
+  }
+  50% {
+    box-shadow: 0 0 55px -6px color-mix(in oklab, var(--color-primary) 85%, transparent);
+  }
+}
+.animate-aura {
+  animation: auraBreath 3.5s ease-in-out infinite;
+}
+
+/* Reactive lift: subtle glow + rise on hover, springy press */
+.reactive {
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.25s ease, border-color 0.25s ease, background-color 0.2s ease;
+}
+.reactive:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 24px -8px color-mix(in oklab, var(--color-primary) 50%, transparent);
+}
+.reactive:active {
+  transform: translateY(0) scale(0.97);
+}
+
+/* ============================================================================
+   Scrollbars
+   ========================================================================== */
+.scrollbar-subtle::-webkit-scrollbar,
+.custom-scrollbar::-webkit-scrollbar { width: 8px; height: 8px; }
+.scrollbar-subtle::-webkit-scrollbar-track,
+.custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+.scrollbar-subtle::-webkit-scrollbar-thumb,
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--color-glass-border);
+  border-radius: 10px;
+}
+.scrollbar-subtle::-webkit-scrollbar-thumb:hover,
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in oklab, var(--color-primary) 60%, transparent);
+}
+
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* ============================================================================
+   Animations
+   ========================================================================== */
+@keyframes pulseGlow {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.02); }
+}
+.animate-pulse-glow { animation: pulseGlow 2s infinite ease-in-out; }
+
+@keyframes gradientX {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+.animate-gradient-x {
+  background-size: 200% 200%;
+  animation: gradientX 6s ease infinite;
+}
+
+@keyframes scaleUp {
+  from { opacity: 0; transform: scale(0.96) translateY(6px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+.animate-scale-up { animation: scaleUp 0.2s ease-out; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in { animation: fadeIn 0.25s ease-out; }
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.animate-shimmer {
+  background-size: 200% 100%;
+  animation: shimmer 2.5s linear infinite;
+}
